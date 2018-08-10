@@ -1,3 +1,4 @@
 GeoLite*
 *.swp
 node_modules
+db

@@ -6,7 +6,8 @@ maxmind.open('GeoLite2-City_20180807/GeoLite2-City.mmdb', (err, cityLookup) => {
     '64.46.22.7',
     '79.0.45.22',
     '159.65.107.57',
-    '88.99.3.86'
+    '88.99.3.86',
+    '210.187.148.110'
   ]
   ips.forEach(ip => {
     const data = cityLookup.get(ip)
