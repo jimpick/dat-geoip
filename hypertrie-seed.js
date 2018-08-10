@@ -7,7 +7,7 @@ feed.ready(() => {
   console.log('Key:', feed.key.toString('hex'))
   const sw = hyperdiscovery(feed)
   sw.on('connection', (peer, info) => {
-    console.log('Connection:', info)
+    console.log('Connection:', info.host)
   })
 })
 

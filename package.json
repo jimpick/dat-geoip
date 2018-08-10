@@ -12,11 +12,18 @@
   "author": "Jim Pick (@jimpick)",
   "license": "MIT",
   "dependencies": {
-    "csv-parse": "^2.5.0",
-    "hypercore": "^6.18.1",
     "hyperdiscovery": "^8.0.0",
     "hypertrie": "^3.0.0",
     "ip": "^1.1.5",
     "random-access-memory": "^3.0.0"
+  },
+  "devDependencies": {
+    "csv-parse": "^2.5.0",
+    "dat-link-resolve": "^2.2.0",
+    "hypercore": "^6.18.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimpick/dat-geoip.git"
   }
 }
