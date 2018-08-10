@@ -18,14 +18,26 @@ if (!ip.isV4Format(lookupIp)) {
 
 db.ready(() => {
   const ipBuffer = ip.toBuffer(lookupIp)
-  console.log(ipBuffer)
+  // console.log(ipBuffer)
   const prefix = `ipv4/${ipBuffer[0]}/${ipBuffer[1]}/${ipBuffer[2]}`
-  scanPrefix(prefix, (err, list) => {
+  scanPrefix(prefix, (err, record) => {
     if (err) {
       console.error('Error', err)
       process.exit(1)
     }
-    console.log(list)
+    if (!record) {
+      console.log('No match')
+      process.exit(0)
+    }
+    // console.log(record)
+    db.get(`geoname/en/${record.geonameId}`, (err, data) => {
+      if (err) {
+        console.error('Error', err)
+        process.exit(1)
+      }
+      const result = {ip: lookupIp, ...record, ...data.value}
+      console.log(result)
+    })
   })
 })
 
@@ -41,7 +53,7 @@ function scanPrefix (prefix, cb) {
       })
     }
     if (!list || list.length === 0) {
-      console.log('No results')
+      // console.log('No results')
       prefix = prefix.replace(/\/\d+$/, '')
       if (prefix === 'ipv4') {
         cb(null)
@@ -55,7 +67,7 @@ function scanPrefix (prefix, cb) {
 }
 
 function scan (prefix, cb) {
-  console.log(`Scanning Prefix: ${prefix}`)
+  // console.log(`Scanning Prefix: ${prefix}`)
   db.list(prefix, {recursive: true}, (err, list) => {
     cb(null, list)
   })
