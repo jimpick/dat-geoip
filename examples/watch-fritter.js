@@ -13,59 +13,62 @@ const cache = {}
 const dbKey = '2514aeafe4ed6246bae3195bb41691f7adb8526d174bb15a063c64990ad7d146'
 
 const db = hypertrie(ram, dbKey, {sparse: true, valueEncoding: 'json'})
+db.ready(() => {
+  hyperdiscovery(db, {upload: false, live: true})
+  db.feed.update(run)
+})
+
 
 // const watchUrl = 'dat://fritter.hashbase.io' // Won't resolve?
 const watchUrl = 'dat://9900f9aad4d6e79e0beb1c46333852b99829e4dfcdfa9b690eeeab3c367c1b9a'
 
-datResolve(watchUrl, (err, key) => {
-  if (err) {
-    console.log('Error', err)
-    process.exit(1)
-  }
-  console.log('Watch key:', key.toString('hex'))
-  const feed = hypercore(ram, key, {sparse: true})
-  feed.ready(() => {
-    const sw = hyperdiscovery(feed, {live: true})
-    sw.on('connection', (peer, info) => {
-      const host = info.host.replace(/^\:\:ffff\:/, '')
-      if (cache[host]) return
-      getLocation(host, (err, geo) => {
-        cache[host] = geo
-        if (!geo) {
-          console.log('Connection', host, '(No location found)')
-        } else {
-          console.log(
-            'Connection',
-            host,
-            geo.cityName,
-            geo.subdivision1IsoCode,
-            geo.countryName
-          )
-        }
-        if (err) console.log('Error', err)
+function run () {
+  datResolve(watchUrl, (err, key) => {
+    if (err) {
+      console.log('Error', err)
+      process.exit(1)
+    }
+    console.log('Watch key:', key.toString('hex'))
+    const feed = hypercore(ram, key, {sparse: true})
+    feed.ready(() => {
+      const sw = hyperdiscovery(feed, {
+        live: false,
+        maxConnections: 16,
+        dht: false
+      })
+      sw.focus = true
+      sw.on('connection', (peer, info) => {
+        // console.log('\nConnect:', info.host)
+        peer.info = info
+        const host = info.host.replace(/^\:\:ffff\:/, '')
+        if (cache[host]) return
+        getLocation(host, (err, geo) => {
+          cache[host] = geo
+          if (!geo) {
+            console.log(`${host} (No location found)`)
+          } else {
+            console.log(`${host} ${geo.cityName} ${geo.subdivision1IsoCode} ` +
+              `${geo.countryName}`)
+          }
+          if (err) console.log('Error', err)
+        })
       })
     })
   })
-})
+}
 
 function getLocation(host, cb) {
-  if (!ip.isV4Format(host)) return cb()
-  db.ready(() => {
-    const sw = hyperdiscovery(db, {upload: false, live: true})
-
-    db.feed.update(() => {
-      const ipBuffer = ip.toBuffer(host)
-      // console.log(ipBuffer)
-      const prefix = `ipv4/${ipBuffer[0]}/${ipBuffer[1]}/${ipBuffer[2]}`
-      scanPrefix(host, prefix, (err, record) => {
-        if (err) return cb(err)
-        if (!record) return cb()
-        db.get(`geoname/en/${record.geonameId}`, (err, data) => {
-          if (err) return cb(err)
-          const result = {ip: host, ...record, ...data.value}
-          cb(null, result)
-        })
-      })
+  if (!ip.isV4Format(host)) return cb(new Error('Unsupported'))
+  const ipBuffer = ip.toBuffer(host)
+  // console.log(ipBuffer)
+  const prefix = `ipv4/${ipBuffer[0]}/${ipBuffer[1]}/${ipBuffer[2]}`
+  scanPrefix(host, prefix, (err, record) => {
+    if (err) return cb(err)
+    if (!record) return cb()
+    db.get(`geoname/en/${record.geonameId}`, (err, data) => {
+      if (err) return cb(err)
+      const result = {ip: host, ...record, ...data.value}
+      cb(null, result)
     })
   })
 }
