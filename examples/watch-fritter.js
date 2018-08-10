@@ -42,6 +42,7 @@ function run () {
         peer.info = info
         const host = info.host.replace(/^\:\:ffff\:/, '')
         if (cache[host]) return
+        cache[host] = 'pending'
         getLocation(host, (err, geo) => {
           cache[host] = geo
           if (!geo) {
