@@ -1,8 +1,10 @@
 {
-  "name": "maxmind-test",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "@jimpick/dat-geoip",
+  "version": "0.0.1",
+  "description": "Use hypertrie to look up IP geolocation",
+  "bin": {
+    "dat-geoip": "dat-geoip.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,9 +13,10 @@
   "license": "MIT",
   "dependencies": {
     "csv-parse": "^2.5.0",
-    "flush-write-stream": "^1.0.3",
+    "hypercore": "^6.18.1",
+    "hyperdiscovery": "^8.0.0",
     "hypertrie": "^3.0.0",
     "ip": "^1.1.5",
-    "maxmind": "^2.7.0"
+    "random-access-memory": "^3.0.0"
   }
 }
