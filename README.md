@@ -6,6 +6,12 @@ An experiment in using hypertrie to host a peer-to-peer geo ip lookup database.
 The data from [MaxMind GeoLite2](https://dev.maxmind.com/geoip/geoip2/geolite2/)
 is loaded into a [hypertrie](https://github.com/mafintosh/hypertrie).
 
+# Install
+
+```
+npm install -g @jimpick/dat-geoip
+```
+
 # Usage
 
 There is a CLI to look up an IP address:
