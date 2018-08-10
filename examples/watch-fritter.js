@@ -27,15 +27,16 @@ datResolve(watchUrl, (err, key) => {
   feed.ready(() => {
     const sw = hyperdiscovery(feed, {live: true})
     sw.on('connection', (peer, info) => {
-      if (cache[info.host]) return
-      getLocation(info.host, (err, geo) => {
-        cache[info.host] = geo
+      const host = info.host.replace(/^\:\:ffff\:/, '')
+      if (cache[host]) return
+      getLocation(host, (err, geo) => {
+        cache[host] = geo
         if (!geo) {
-          console.log('Connection', info.host, '(No location found)')
+          console.log('Connection', host, '(No location found)')
         } else {
           console.log(
             'Connection',
-            info.host,
+            host,
             geo.cityName,
             geo.subdivision1IsoCode,
             geo.countryName
