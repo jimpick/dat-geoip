@@ -22,6 +22,9 @@ db.ready(() => {
 // const watchUrl = 'dat://fritter.hashbase.io' // Won't resolve?
 const watchUrl = 'dat://9900f9aad4d6e79e0beb1c46333852b99829e4dfcdfa9b690eeeab3c367c1b9a'
 
+// Fritter+
+// const watchUrl = 'dat://3e277054feede953d5794966eed1f2a63282463382b5aeb801fbfc8df6430d6a'
+
 function run () {
   datResolve(watchUrl, (err, key) => {
     if (err) {
@@ -44,12 +47,15 @@ function run () {
         if (cache[host]) return
         cache[host] = 'pending'
         getLocation(host, (err, geo) => {
+          const date = new Date()
+            .toLocaleString('en-US', { timeZone: 'America/Vancouver' })
+            .replace(/^.*, /, '')
           cache[host] = geo
           if (!geo) {
-            console.log(`${host} (No location found)`)
+            console.log(`${date} ${host} (No location found)`)
           } else {
-            console.log(`${host} ${geo.cityName} ${geo.subdivision1IsoCode} ` +
-              `${geo.countryName}`)
+            console.log(`${date} ${host} ${geo.cityName} ` +
+              `${geo.subdivision1IsoCode} ${geo.countryName}`)
           }
           if (err) console.log('Error', err)
         })
